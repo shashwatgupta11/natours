@@ -93,3 +93,46 @@ app.post('/', (req, res) => {
   console.log('get req 1');
   res.status(200).send('huihuiuhui');
 });
+
+
+//12 practicing an api 
+const getTour=((req,res)=>{
+  res.status(200).json({
+    message:'success',
+    data:res
+  })
+})
+
+//13 mounting or routes 
+const tarRouter=express.routes()
+tarRouter.route('/').get(getallTours).post(postAllRoutes)
+app.use('api/v1/tours',tarRouter)
+
+//one more for practice
+
+const userRouter=express.routes
+userRouter.router('/:id').get(getUsers).post(postUsers)
+app.use('/:id',userRouter)
+
+
+// 14 params middleware 
+router.param('id',(req,res,next,val)=>{
+  console.log(val)
+  next()
+  //this param only works jb query hgi ese sbke lie ni chalega ye
+})
+
+//15 chaining middlewares
+
+router.route('/:id').get(tourRouter.functionName,getallTours)
+
+exports.functionName=((req,res,next)=>{
+  if(req.name=="ss")
+  {
+    return res.status(400).json({
+      message:'wrong id pass',
+      data
+    })
+  }
+  next()
+})
