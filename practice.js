@@ -30,7 +30,9 @@ server.listen('8000', '127.0.0.1', () => {
 const server1 = http.createServer((req, res) => {
   const pathName = req.params;
   if (pathName == '/') {
-    res.end('ha bhai ye chalega koi dikkat ki bat ni h and make more lse cases if u wish to learn');
+    res.end(
+      'ha bhai ye chalega koi dikkat ki bat ni h and make more lse cases if u wish to learn',
+    );
   } else {
     res.writeHead(404, {
       'Content-type': 'text/html',
@@ -79,6 +81,11 @@ server2.on('request', (req, res) => {
 
 //11 express a node js framework
 const express = require('express');
+const { getAlLTours } = require('./controllers/tourController');
+const { router } = require('../app');
+const { schema } = require('./models/userModels');
+const { default: slugify } = require('slugify');
+const catchAsync = require('../after-section-09/utils/catchAsync');
 const app = express;
 
 app.get('/', (req, res) => {
@@ -135,4 +142,187 @@ exports.functionName=((req,res,next)=>{
     })
   }
   next()
+})
+// 12 middleware for getting req params pt 17
+app.use(express.json());
+
+//13 register pt 21 practicing middleware
+app.use('app.route', tourRouter);
+tourRouter = express.Router();
+tourRouter.rote('/').get(getAlLTours).post(postTuroranyothername);
+
+// 14 expresss me chaining middleware practice pt no 24
+app.use('tourrote', tourController);
+router = express.route();
+router.route('approute', tourcomtrooler.functionName);
+
+functionName(req, res, next);
+{
+  res.status(200).json({
+    essage: 'successs',
+    data,
+  });
+}
+
+//15 tourschema pt no 29 on register
+const tourSchema = new Mongoose.schema({
+  name: { type: String },
+  required: [true, 'A Tour must have a name'],
+  unique: true,
+  trim: true,
+  maxlength: [40, 'A Tour sould max have 40 characters'],
+  minlength: [10, 'A Tour must have minimum 10 characters'],
+});
+
+const Tour = mongoose.model('Tour', tourSchema);
+
+//16 for saving in db pt no 30
+const newTour = new Tour({
+  name: 'shashwat',
+});
+
+newTour.save();
+
+// 17 findbyidand update pt no 35 register
+exports.updateTour = catchAsync(async (req, res, next) => {
+  
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+});
+
+
+
+//18 implementing filtering pt no 36 on register
+exports.getAllTours = (req, res) => {
+  const queries = { ...req.queries };
+  const excludedFields = ['sort', 'page'];
+  excludedFields.forEach((item) => delete queries(item));
+};
+
+//19 aggregate practice pt 37
+
+exports.tourAggregator = async (req, res) => {
+  const stats = await Tour.aggregate([
+    { $match: { ratingsAverage: { $gte: 4.5 } } },
+    {
+      $group: {
+        _id: null,
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRatings: { $sum: '' },
+      },
+    },
+  ]);
+};
+
+//20 virtual properties register pt 39
+
+TourSchema.virtual('propertyName which u want to set').get(function () {
+  return this.duration / 7;
+});
+
+// let andinschema{
+//   toObject:{virtuals:truee}
+//   toJson:{virtuals:truee}
+// }
+
+//21 document middleware pre and works on pre and post and works on save and create
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+});
+
+tourSchema.post('save', function () {
+  this.slug = slugify(this.name, { upper: true });
+});
+
+//22 query middleware this one works on find pt no 41 in register
+tourSchema.pre('/^find/', function (next) {
+  this.find({ secretTours: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+//doc ke detail bhi milte h is wale post iddleware me
+tourSchema.post('/^find/', function (next) {
+  console.log(`Query took ${Date.now() - this.start} millisecond`);
+  next();
+});
+
+//23 aggregator pipeline pt no 42 in register
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTours: { $ne: true } } });
+  next();
+});
+
+//24 custom vakidator pt no 43 on register
+priceDiscount: {
+  type: Number,
+  unique: true,
+  validate:{
+    validator:function(val)
+    {
+     // this points to current object only
+return val<this.price
+    },
+    message:'Discount price ust be less than the regular price '
+  }
+};
+
+//25 unhandled routes pt 44 on register
+
+app.all('*',function(req,res,next)
+{
+  res.status(404).json({
+    message:`can't find the route which u have requested on the server`,
+     status:'fail'
+  })
+})
+
+//26 error middleware pt no 46 on register'
+
+app.use((err,req,res,next)=>{
+res.status(404).json({
+  message:err.message||'error h bhai',
+  status:err.status
+})
+})
+
+//27 creating genral error handling class pt 46 on register 
+
+class AppError extends Error{
+  constructor(statusCode,status)
+  {
+    super(message)
+    this.statusCode=statusCode
+    this.status=status
+
+    Error.captureStackTrace(this,this.constructor)
+  }
+}
+module.exports=AppError
+
+// 28 removing try catch register pt 47
+module.exports=fn=>{
+  return (req,res,next)=>{
+    fn(req,res,next).catch(next(err))
+  }
+} 
+
+// 29 findbyid me id ni mili to eroro uski handling pt no 48 on register 
+exports.getTour=catchAsync(async(req,res,next)=>{
+  const idTour=await Tour.findById((req.params.id),(err)=>{
+    if(err)
+    {
+      new AppError("no id founf by this kindly sleect the right options")
+    }
+  })
+})
+
+
+//30 handling unhandled rejection ie server close etc pt no 49 on register
+process.on('unhandledrejection',(err)=>{
+  server.close(()=>{
+    process.exit()
+  })
 })
