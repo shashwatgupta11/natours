@@ -325,4 +325,14 @@ process.on('unhandledrejection',(err)=>{
   server.close(()=>{
     process.exit()
   })
-})\
+})
+
+//31 gathering ids from array pt 65 on register 
+
+tourSchema.pre('save',async (req,res,next)=>{
+  const guidePromises=this.guides.map(async (id)=>await User.findById(id))
+  this.guides=await Promise.all(guidePromises)
+  next()
+})
+
+
